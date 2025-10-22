@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTFo-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Dashboard</title>
+    <link rel="stylesheet" href="./blog.css">
+   
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My Blog</h1>
+            <form class="search-form">
+                <input type="text" placeholder="Search articles..." required>
+                <input type="email" placeholder="Subscribe via email" required>
+                <button type="submit">Search</button>
+            </form>
+        </header>
+        
+        <main>
+            <article class="blog-post">
+                <h2><a href="#post1">Understanding CSS Selectors</a></h2>
+                <p class="meta"><span class="letterp">P</span>osted on <time>March 15, 2024</time> by <span class="author">Jane Doe</span></p>
+                <p>CSS selectors are powerful tools that allow developers to target specific HTML elements...</p>
+                <p>In this comprehensive guide, we'll explore various selector types and their use cases.</p>
+                <a href="#post1" class="read-more">Read more</a>
+                <div class="tags">
+                    <span class="tag">CSS</span>
+                    <span class="tag">Tutorial</span>
+                    <span class="tag">Web Development</span>
+                </div>
+            </article>
+
+            <article class="blog-post">
+                <h2><a href="#post2">Responsive Design Patterns</a></h2>
+                <p class="meta"><span class="letterp">P</span>osted on <time>March 12, 2024</time> by <span class="author">John Smith</span></p>
+                <p>Modern web design requires adaptability across various devices and screen sizes...</p>
+                <p>Let's dive into the most effective responsive design patterns used today.</p>
+                <a href="#post2" class="read-more">Read more</a>
+                <div class="tags">
+                    <span class="tag">Design</span>
+                    <span class="tag">Responsive</span>
+                </div>
+            </article>
+
+            <article class="blog-post">
+                <h2><a href="#post3">JavaScript ES6 Features</a></h2>
+                <p class="meta"><span class="letterp">P</span>osted on <time>March 8, 2024</time> by <span class="author">Jane Doe</span></p>
+                <p>ES6 brought revolutionary changes to JavaScript development...</p>
+                <p>Discover the features that transformed modern JavaScript programming.</p>
+                <a href="#post3" class="read-more">Read more</a>
+                <div class="tags">
+                    <span class="tag">JavaScript</span>
+                    <span class="tag">Tutorial</span>
+                </div>
+            </article>
+
+        </main>
+
+        <aside>
+            <section class="widget">
+                <h3>Popular Posts</h3>
+                <ul>
+                    <li><a href="#popular1">Getting Started with Flexbox</a></li>
+                    <li><a href="#popular2">CSS Grid Layout Guide</a></li>
+                    <li><a href="#popular3">10 JavaScript Tips</a></li>
+                    <li><a href="#popular4">Web Accessibility Basics</a></li>
+                    <li><a href="#popular5">Performance Optimization</a></li>
+                </ul>
+            </section>
+        </aside>
+    
+    </div>  
+</body>
+</html>

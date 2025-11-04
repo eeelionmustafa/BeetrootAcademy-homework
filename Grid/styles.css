@@ -1,0 +1,49 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background-color: #fff;
+    font-family: 'Mulish', sans-serif;
+    color: #111;    
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+
+.container {
+    width: 90%;
+    max-width: 1110px;
+    margin: 0 auto;
+}
+
+
+
+.grid_gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding-top: 156px;
+}
+
+.grid_gallery .gallery_column {
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+.grid_gallery .gallery_column .gallery_images:last-child {
+    margin-bottom: 0;
+}
+
+.image {
+    width: 100%;
+    height: auto;
+}

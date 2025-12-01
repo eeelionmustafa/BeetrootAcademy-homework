@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+  body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background-color: #1b1f2b; 
+    color: #fff; 
+    margin: 0; padding: 20px;
+  }
+
+  h1 { text-align: center; color: #f39c12; margin-bottom: 20px; }
+
+  form { text-align: center; margin-bottom: 30px; }
+  input, select { 
+    padding: 10px; margin: 5px 10px; border: none; border-radius: 8px; width: 220px; 
+  }
+  input:focus, select:focus { outline: none; box-shadow: 0 0 5px #f39c12; }
+  button { 
+    padding: 10px 20px; border: none; border-radius: 8px; background-color: #f39c12; 
+    color: #1b1f2b; cursor: pointer; font-weight: bold; transition: 0.3s; 
+  }
+  button:hover { background-color: #e67e22; }
+
+  #results {
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+    gap: 25px; 
+    justify-items: center;
+  }
+
+  .movie {
+    position: relative; 
+    width: 200px; 
+    cursor: pointer; 
+    border-radius: 10px; 
+    overflow: hidden; 
+    transition: transform 0.2s;
+  }
+  .movie:hover { transform: scale(1.05); }
+  .movie img { 
+    width: 100%; 
+    height: 300px; 
+    object-fit: cover; 
+    display: block;
+  }
+  .movie-title {
+    position: absolute; 
+    bottom: 0; 
+    width: 100%; 
+    background: rgba(0,0,0,0.7); 
+    color: #fff; 
+    text-align: center; 
+    font-size: 16px; 
+    padding: 8px; 
+  }
+  .details-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    background-color: #f39c12;
+    color: #1b1f2b;
+    border: none;
+    border-radius: 5px;
+    display: none;
+    cursor: pointer;
+  }
+  .movie:hover .details-btn { display: block; }
+
+  /* Pagination */
+  .pagination { text-align: center; margin: 30px 0; }
+  .pagination button { 
+    margin: 3px; 
+    background-color: #f39c12; 
+    color: #1b1f2b; 
+    border-radius: 6px; 
+    padding: 6px 12px;
+    font-weight: bold;
+  }
+  .pagination button:hover { background-color: #e67e22; }
+  .pagination button:disabled { background-color: #555; color: #ccc; cursor: not-allowed; }
+
+  /* Modal */
+  .modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; top: 0; width: 100%; height: 100%; 
+    background-color: rgba(0,0,0,0.8); 
+    justify-content: center; align-items: center;
+  }
+  .modal-content {
+    background-color: #2c3e50; 
+    padding: 20px; 
+    border-radius: 12px; 
+    max-width: 700px; 
+    display: flex; gap: 20px; 
+    flex-wrap: wrap; 
+    color: #ecf0f1;
+    position: relative;
+  }
+  .modal-content img { 
+    width: 180px; 
+    max-height: 270px; 
+    object-fit: contain; 
+    flex-shrink: 0; 
+    border-radius: 8px;
+  }
+  #modal-text { flex: 1; text-align:left; font-size: 14px; line-height: 1.5; }
+  #modal-text h2 { margin-top:0; font-size: 22px; color: #f39c12; }
+  .close { color: #fff; position: absolute; top: 10px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; }
+  .close:hover { color: #f39c12; }
+
+</style>
+
+<body>
+    <h1>Movie Search</h1>
+
+    <form action="" id="searchForm">
+        <input type="text" id="title" placeholder="Enter movie name" required>
+        <select name="" id="type">
+            <option value="">All</option>
+            <option value="movie">Movie</option>
+            <option value="series">Series</option>
+            <option value="episodes">Episodes</option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+
+    <div id="results"></div>
+    <div id="pagination" class="pagination"></div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">
+                &times;
+            </span>
+            <img id="modal-poster" src="" alt="Poster">
+            <div id="modal-text"></div>
+        </div>
+    </div>
+
+</body>
+<script>
+    const apiKey = '9745296a';
+    const resultsDiv = document.getElementById('results');
+    const paginationDiv = document.getElementById('pagination');
+    const modal = document.getElementById("modal");
+    const modalDetailsText = document.getElementById("modal-text");
+    const modalPoster = document.getElementById("modal-poster");
+    const closeBtn = modal.querySelector(".close");
+
+
+    closeBtn.onclick = () => { modal.style.display = "none"; };
+    window.onclick = function (event) { if (event.target === modal) modal.style.display = "none"; };
+
+
+    document.getElementById('searchForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        searchMovies(1);
+    });
+
+    function searchMovies(page) {
+        const title = document.getElementById('title').value.trim();
+        const type = document.getElementById('type').value;
+
+        if (!title)
+            return;
+
+
+        resultsDiv.innerHTML = '';
+        paginationDiv.innerHTML = '';
+
+        let url = `https://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(title)}&page=${page}`;
+        if (type) url += `&type=${type}`;
+
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (data.Response === "True") {
+                    displayMovies(data.Search);
+                    setupPagination(data.totalResults, page);
+                } else {
+                    resultsDiv.innerHTML = "<p style='text-align:center; color: #ccc;'>Movie not found in the API! Search other movie name!</p>";
+                }
+            })
+            .catch(err => console.error(err));
+
+    }
+
+
+    function displayMovies(movies) {
+        resultsDiv.innerHTML = '';
+        movies.forEach(movie => {
+            const div = document.createElement('div');
+            div.className = 'movie';
+            div.innerHTML = `
+            <img src="${movie.Poster}" alt="${movie.Title}" onerror="this.style.display='none';"/>
+            <div class="movie-title">${movie.Title} (${movie.Year})</div>
+            <button class="details-btn" onclick="getDetails('${movie.imdbID}')">Details</button>`;
+            resultsDiv.appendChild(div);
+        })
+    }
+
+    function setupPagination(totalResults, currentPage) {
+        const totalPages = (totalResults % 10 === 0)
+            ? totalResults / 10
+            : (totalResults / 10 | 0) + 1;
+
+        paginationDiv.innerHTML = '';
+        if (totalPages <= 1)
+            return;
+
+        const prevBtn = document.createElement("button");
+        prevBtn.textContent = "Previous";
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.addEventListener("click", () => searchMovies(currentPage - 1));
+        paginationDiv.appendChild(prevBtn);
+
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = i;
+            if (i === currentPage) btn.disabled = true;
+            btn.addEventListener("click", () => searchMovies(i));
+            paginationDiv.appendChild(btn);
+        }
+
+        const nextBtn = document.createElement("button");
+        nextBtn.textContent = "Next";
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.addEventListener("click", () => searchMovies(currentPage + 1));
+        paginationDiv.appendChild(nextBtn);
+    }
+
+    function getDetails(imdbID) {
+        const url = `https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&plot=full`;
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (data.Response === 'True') {
+            modalPoster.src = data.Poster !== "N/A" ? data.Poster : "";
+modalPoster.style.display = data.Poster !== "N/A" ? "block" : "none";
+
+                    modalPoster.alt = data.Title;
+                    modalDetailsText.innerHTML = `
+            <h2>${data.Title} (${data.Year})</h2>
+                  <p><strong>Type:</strong> ${data.Type}</p>
+                  <p><strong>Genre:</strong> ${data.Genre}</p>
+                  <p><strong>Director:</strong> ${data.Director}</p>
+                  <p><strong>Actors:</strong> ${data.Actors}</p>
+                  <p><strong>Plot:</strong> ${data.Plot}</p>`;
+                    modal.style.display = 'flex';
+
+                }
+                else {
+                    modalDetailsText.innerHTML = '<p>Details not found!</p>';
+                    modalPoster.src = '';
+                    modal.style.display = 'flex';
+                }
+            })
+            .catch(err => console.error(err));
+
+    }
+
+
+
+
+
+</script>
+
+</html>

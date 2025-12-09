@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #controls {
+      margin-bottom: 20px;
+    }
+    #timezoneInput {
+      padding: 8px;
+      width: 250px;
+    }
+    #addClockBtn {
+      padding: 8px 12px;
+      margin-left: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    #addClockBtn:hover {
+      background-color: #0056b3;
+    }
+    #clockContainer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+  </style>
+</head>
+<body>
+
+
+  <div id="controls">
+    <input type="text" id="timezoneInput" placeholder="Enter timezone">
+    <button id="addClockBtn">Add Clock</button>
+  </div>
+
+
+  <div id="clockContainer"></div>
+
+  <script>
+    class WorldClock {
+      constructor(city) {
+        this.city = city;
+
+        this.clockCard = document.createElement("div");
+        this.clockCard.style.border = "1px solid #ccc";
+        this.clockCard.style.padding = "15px";
+        this.clockCard.style.borderRadius = "10px";
+        this.clockCard.style.width = "220px";
+        this.clockCard.style.textAlign = "center";
+        this.clockCard.style.backgroundColor = "#f9f9f9";
+
+        const title = document.createElement("h3");
+        title.textContent = city.replace("_", " ");
+        this.clockCard.appendChild(title);
+
+        this.timeBtn = document.createElement("button");
+        this.timeBtn.textContent = "Show Time";
+        this.timeBtn.style.margin = "5px";
+        this.timeBtn.onclick = () => this.showTime();
+        this.clockCard.appendChild(this.timeBtn);
+
+        this.dateTimeBtn = document.createElement("button");
+        this.dateTimeBtn.textContent = "Show Date & Time";
+        this.dateTimeBtn.style.margin = "5px";
+        this.dateTimeBtn.onclick = () => this.showDateTime();
+        this.clockCard.appendChild(this.dateTimeBtn);
+
+        this.deleteBtn = document.createElement("button");
+        this.deleteBtn.textContent = "Delete Clock";
+        this.deleteBtn.style.margin = "5px";
+        this.deleteBtn.style.backgroundColor = "#dc3545";
+        this.deleteBtn.style.color = "white";
+        this.deleteBtn.onclick = () => this.deleteClock();
+        this.clockCard.appendChild(this.deleteBtn);
+
+        this.output = document.createElement("p");
+        this.output.style.marginTop = "10px";
+        this.clockCard.appendChild(this.output);
+
+        document.getElementById("clockContainer").appendChild(this.clockCard);
+      }
+
+      getCurrentDate() {
+        return new Date().toLocaleString("en-US", { timeZone: this.city, year: "numeric", month: "2-digit", day: "2-digit" });
+      }
+
+      getCurrentDateTime() {
+        return new Date().toLocaleString("en-US", { timeZone: this.city });
+      }
+
+      showTime() {
+        this.output.textContent = `Time: ${new Date().toLocaleTimeString("en-US", { timeZone: this.city })}`;
+      }
+
+      showDateTime() {
+        this.output.textContent = `Date & Time: ${this.getCurrentDateTime()}`;
+      }
+
+      deleteClock() {
+        this.clockCard.remove();
+        console.log(`Clock for ${this.city} deleted.`);
+      }
+    }
+
+    document.getElementById("addClockBtn").addEventListener("click", () => {
+      const timezone = document.getElementById("timezoneInput").value.trim();
+      if (timezone) {
+        try {
+          new Date().toLocaleString("en-US", { timeZone: timezone });
+          new WorldClock(timezone);
+          document.getElementById("timezoneInput").value = "";
+        } catch (e) {
+          alert("Invalid timezone. Example: America/New_York");
+        }
+      } else {
+        alert("Please enter a timezone.");
+      }
+    });
+  </script>
+</body>
+</html>
